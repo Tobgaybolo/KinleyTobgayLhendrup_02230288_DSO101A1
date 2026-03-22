@@ -1,0 +1,219 @@
+:root {
+  --bg: #f3efe6;
+  --surface: #fffdf8;
+  --primary: #0e3a4a;
+  --primary-dark: #0a2a35;
+  --danger: #be123c;
+  --text: #1f2937;
+  --muted: #5b6474;
+  --border: #d6d4cb;
+  --success-bg: #d1fae5;
+  --success-text: #065f46;
+  --pending-bg: #fef3c7;
+  --pending-text: #92400e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body), "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background:
+    radial-gradient(circle at 12% 12%, #d7efe6 0, transparent 33%),
+    radial-gradient(circle at 88% 8%, #ffe4d6 0, transparent 34%),
+    linear-gradient(160deg, #f6f1e8 0%, var(--bg) 52%, #e9edf7 100%);
+  color: var(--text);
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2.5rem 1rem;
+}
+
+.card {
+  width: min(900px, 100%);
+  background: var(--surface);
+  border-radius: 24px;
+  box-shadow: 0 20px 45px rgba(26, 35, 52, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  padding: 1.6rem;
+  animation: enter 0.45s ease-out;
+}
+
+h1 {
+  font-family: var(--font-title), Georgia, serif;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  letter-spacing: 0.3px;
+}
+
+.task-form {
+  display: grid;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1rem;
+  background: #fff;
+}
+
+.task-form label {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+textarea {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.58rem 0.7rem;
+  background: #fff;
+}
+
+input:focus,
+textarea:focus {
+  outline: 2px solid #8ec5da;
+  outline-offset: 1px;
+}
+
+.checkbox-row {
+  display: flex !important;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.form-actions,
+.task-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+button {
+  border: none;
+  border-radius: 14px;
+  padding: 0.56rem 0.88rem;
+  background: var(--primary);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.2s ease;
+}
+
+button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+button.secondary {
+  background: #334155;
+}
+
+button.secondary:hover {
+  background: #1e293b;
+}
+
+button.danger {
+  background: var(--danger);
+}
+
+.tasks {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.task-item {
+  border: 1px solid #cfd4de;
+  border-radius: 18px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.7rem;
+  background: linear-gradient(130deg, #ffffff 0%, #f6f8fc 100%);
+  animation: rise 0.25s ease-out;
+}
+
+.task-item.done h3 {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.task-item h3,
+.task-item p {
+  margin: 0;
+}
+
+.task-item h3 {
+  margin-top: 0.35rem;
+}
+
+.task-item p {
+  color: #3c475b;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.18rem 0.58rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.status-badge.completed {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.status-badge.pending {
+  background: var(--pending-bg);
+  color: var(--pending-text);
+}
+
+.error {
+  color: var(--danger);
+  margin: 0.75rem 0;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 1rem;
+  }
+
+  .task-actions button {
+    flex: 1 1 auto;
+  }
+}
