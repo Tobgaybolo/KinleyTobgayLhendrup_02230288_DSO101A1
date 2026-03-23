@@ -5,7 +5,7 @@ RUN npm install
 
 FROM node:18-alpine AS builder
 WORKDIR /app
-ARG NEXT_PUBLIC_API_URL=http://localhost:5000
+ARG NEXT_PUBLIC_API_URL=https://be-todo.onrender.com
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .

@@ -50,5 +50,5 @@ services:
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://be-todo.onrender.com
-      - key: REACT_APP_API_URL
-        value: https://be-todo.onrender.com
+      - key: NODE_ENV
+        value: production
