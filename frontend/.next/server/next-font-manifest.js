@@ -1,1 +1,1 @@
-self.__NEXT_FONT_MANIFEST='{"pages":{},"app":{"/Users/kinley_bolo/Desktop/DSO101/Assignment1/KinleyTobgayLhendrup_02230288_DSO101_A1/todo-app/frontend/app/layout":["static/media/af4bf8399d1aacdf-s.p.woff2","static/media/4c9affa5bc8f420e-s.p.woff2"]},"appUsingSizeAdjust":true,"pagesUsingSizeAdjust":false}';
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/kinley_bolo/Desktop/DSO101/Assignment/frontend/app/layout\":[\"static/media/af4bf8399d1aacdf-s.p.woff2\",\"static/media/4c9affa5bc8f420e-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

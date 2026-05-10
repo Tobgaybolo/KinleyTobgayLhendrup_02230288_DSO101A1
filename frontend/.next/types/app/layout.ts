@@ -1,4 +1,4 @@
-// File: /Users/kinley_bolo/Desktop/DSO101/Assignment1/KinleyTobgayLhendrup_02230288_DSO101_A1/todo-app/frontend/app/layout.js
+// File: /Users/kinley_bolo/Desktop/DSO101/Assignment/frontend/app/layout.js
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
