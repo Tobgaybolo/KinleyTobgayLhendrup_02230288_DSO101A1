@@ -81,7 +81,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker image using backend Dockerfile
-                    sh 'docker build -t Tobgaybolo/node-app:latest -f backend/Dockerfile backend/'
+                    sh 'docker build -t tobgaybolo/node-app:latest -f backend/Dockerfile backend/'
                     
                     // Push to Docker Hub (requires credentials)
                     withCredentials([usernamePassword(
@@ -90,7 +90,7 @@ pipeline {
                         passwordVariable: 'DOCKER_PASS'
                     )]) {
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        sh 'docker push Tobgaybolo/node-app:latest'
+                        sh 'docker push tobgaybolo/node-app:latest'
                     }
                 }
             }
