@@ -1,189 +1,300 @@
-# KinleyTobgayLhendrup_02230288_DSO101_A1
+# Assignment I: To-Do App Deployment with CI/CD
 
-This submission implements a full to-do app under one repository using:
-- Frontend: React with Next.js
-- Backend: Express.js
+## Objective
+This report demonstrates practical implementation of DevOps workflows, including:
+
+- Building a full-stack To-Do application
+- Containerizing the application using Docker
+- Deploying services to Render.com
+- Automating image builds and deployments via GitHub CI/CD pipelines
+
+## Step 0: Basic Full-Stack Web App
+
+### Tech Stack
+- Frontend: React
+- Backend: Node.js with Express
 - Database: PostgreSQL
-- Deployment: Docker Hub + Render
 
-## Repository Structure
+### Environment Configuration
 
-```text
-todo-app/
-  frontend/
-    app/
-    components/
-    Dockerfile
-    .env.local.example
-    .env.production
-  backend/
-    server.js
-    db.js
-    Dockerfile
-    .env.example
-    .env.production
-  render.yaml
-  .gitignore
-```
-
-## Part 0: Local Setup (Prerequisite)
-
-### 1. Backend setup
+**Backend `.env`**
 
 ```bash
-cd backend
-npm install
-cp .env.example .env
-npm run dev
+DATABASE_URL=postgresql://kinley_bolo:@localhost:5432/todo_db
 ```
 
-Backend expected environment variables in `backend/.env`:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=todo_app
-DB_SSL=false
-PORT=5000
-```
-
-### 2. Frontend setup
+**Frontend `.env`**
 
 ```bash
-cd ../frontend
-npm install
-cp .env.local.example .env.local
-npm run dev
-```
-
-Frontend expected environment variables in `frontend/.env.local`:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
 REACT_APP_API_URL=http://localhost:5000
 ```
 
-Open the frontend at `http://localhost:3000`.
+### Local Testing
+Run `npm i` and `npm start` in both backend and todo-frontend directories.
 
-## Run With Docker Desktop (Local Full Stack)
+Data flows from frontend to backend and is stored in the PostgreSQL database.
 
-From the `todo-app` folder:
+`.env` files are listed in `.gitignore`.
 
-```bash
-docker compose up --build
-```
+## Part A: Dockerizing and Pushing to Docker Hub
 
-This starts 3 containers:
-- `todo-db` (PostgreSQL, internal Docker network)
-- `todo-backend` (Express API) on `localhost:5001`
-- `todo-frontend` (Next.js app) on `localhost:3000`
+### Docker Build
+Dockerfiles were created for both frontend and backend.
 
-Open `http://localhost:3000` in your browser.
+Images were tagged using the student ID.
 
-Run frontend only with Docker Compose:
+**Sample Backend Dockerfile**
 
-```bash
-cd frontend
-docker compose -f docker-compose.yml up --build
-```
+![alt text](<image ass1/Screenshot 2026-05-10 at 11.26.13 PM.png>)
 
-Useful commands:
+**Sample Frontend Dockerfile**
+![alt text](<image ass1/Screenshot 2026-05-10 at 11.27.57 PM.png>)
+### Docker Push
 
 ```bash
-# Start in background
-docker compose up --build -d
+docker build -t tobgaybolo/be-todo-02230288:02230288.
+docker push tobgaybolo/be-todo-02230288:02230288
 
-# See logs
-docker compose logs -f
-
-# Stop all containers
-docker compose down
-
-# Stop and remove database volume (clean reset)
-docker compose down -v
+docker build -t tobgaybolo/fe-todo-02230288:02230288.
+docker push tobgaybolo/fe-todo-02230288:02230288.
 ```
 
-## API Endpoints
+## Part A: Deploying to Render
 
-- `GET /health`
-- `GET /api/tasks`
-- `GET /api/tasks/:id`
-- `POST /api/tasks`
-- `PUT /api/tasks/:id`
-- `DELETE /api/tasks/:id`
+### Backend Web Service
+Create a Web Service and then select **Existing image from Docker Hub**.
 
-Sample create payload:
+- Image: `tobgaybolo/be-todo-02230288:02230288`
+![alt text](<image ass1/Screenshot 2026-05-24 at 8.15.49 PM.png>)
+- Create a Postgres database on render.com
+![alt text](<image ass1/Screenshot 2026-05-24 at 8.18.10 PM.png>)
+![alt text](<image ass1/Screenshot 2026-05-24 at 8.24.51 PM.png>)
+### Environment Variables on Render.com
 
-```json
-{
-  "title": "Do assignment",
-  "description": "Part A and B",
-  "completed": false
-}
+```env
+DB_HOST=dpg-d8105u0sfn5c73batm60-a.singapore-postgres.render.com
+DB_USER=kinley_bolo
+DB_PASSWORD=wyQL9714OgJe78Dsun3eRnxSIYBQL30q
+DB_NAME=todo_app
+DB_PORT=5432
+PORT=5000
 ```
 
-## Part A: Build and Push Docker Images
+### Frontend Web Service
+Create a Web Service and then select **Existing image from Docker Hub**.
 
-Use your student ID as the tag.
+- Image: `tobgaybolo/fe-todo-02230288:02230288`
+![alt text](<image ass1/Screenshot 2026-05-24 at 8.28.38 PM.png>)
+### Frontend Environment Variable
 
-### Backend image
-
-```bash
-cd backend
-docker build -t yourdockerhub/be-todo:02230288 .
-docker push yourdockerhub/be-todo:02230288
+```env
+REACT_APP_API_URL=https://be-todo-ydis.onrender.com
 ```
 
-### Frontend image
+## Part B: CI/CD with GitHub + Render
 
-```bash
-cd ../frontend
-docker build -t yourdockerhub/fe-todo:02230288 .
-docker push yourdockerhub/fe-todo:02230288
+### Updated Structure
+
+```text
+todo-app/
+  ├── frontend/
+  │   └── Dockerfile
+  ├── backend/
+  │   └── Dockerfile
+  └── render.yaml
 ```
 
-### Render Manual Deploy (Existing image from Docker Hub)
+### render.yaml
 
-1. Create Backend Web Service from `yourdockerhub/be-todo:02230288`
-2. Add backend env vars on Render:
-   - `DB_HOST`
-   - `DB_PORT=5432`
-   - `DB_USER`
-   - `DB_PASSWORD`
-   - `DB_NAME`
-   - `DB_SSL=true`
-   - `PORT=5000`
-3. Create Frontend Web Service from `yourdockerhub/fe-todo:02230288`
-4. Add frontend env vars:
-   - `NEXT_PUBLIC_API_URL=https://be-todo.onrender.com`
-   - `REACT_APP_API_URL=https://be-todo.onrender.com`
+```yaml
+services:
+  - type: web
+    name: backend-todo
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        value: https://be-todo-ydis.onrender.com
+      - key: PORT
+        value: 5000
 
-## Part B: Automated Build and Deployment with `render.yaml`
+  - type: web
+    name: frontend-todo
+    env: docker
+    dockerfilePath: ./frontend/Dockerfile
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://fe-todo-scue.onrender.com
+```
 
-This repository includes a `render.yaml` blueprint that defines both services.
+### Challenges Faced
+Part B of this assignment, which is to deploy directly from a Git repository with a multi-service Docker setup, was not completed because Render blueprints require a subscription.
 
-### Deploy steps
+## Conclusion
+This assignment demonstrated how to:
 
-1. Push this repo to GitHub.
-2. In Render, choose **Blueprint** and connect the GitHub repo.
-3. Render reads `render.yaml` and creates both services.
-4. Every new commit to GitHub triggers a fresh image build and deploy.
+- Build a full-stack app using modern frameworks
+- Use Docker for packaging applications
+- Deploy and manage services using Render
+- Automate deployments using CI/CD from GitHub
 
-## Evidence for Submission (README Requirement)
+These practices are foundational for modern DevOps and cloud-native workflows.
 
-Add screenshots under a `screenshots/` folder and reference them here:
+# Assignment II: CI/CD Pipeline with Jenkins
 
-1. Local app running (frontend + backend)
-2. Docker build and push logs for both services
-3. Docker Hub repositories with `02230288` tags
-4. Render backend service env vars and successful deploy
-5. Render frontend service env vars and successful deploy
-6. Render blueprint deployment and auto-redeploy after a new commit
+## Objective
+This assignment involved configuring a Jenkins pipeline to automate the build, test, and deployment of a Node.js-based to-do list application. The CI/CD workflow ensures seamless code integration, testing, and deployment using Jenkins, GitHub, Node.js, and optionally Docker.
 
-## Notes
+## Pipeline Stages Implemented
+The Jenkins pipeline includes the following stages:
 
-- `.env` files are ignored by `.gitignore`.
-- Only `.env.example` and `.env.production` templates are committed.
-- Backend auto-creates the `tasks` table at startup if it does not exist.
+1. Checkout – Clones the GitHub repository.
+2. Install – Installs all Node.js dependencies using npm install.
+3. Build – Builds the project (optional for basic Node.js apps).
+4. Test – Runs unit tests using Jest with JUnit report generation.
+5. Deploy – Builds and pushes a Docker image to Docker Hub.
+
+## Setup Instructions
+### Jenkins Configuration
+- Installed Jenkins locally and accessed it via
+
+- Installed required plugins:
+
+  - NodeJS Plugin
+
+  - Pipeline
+
+  - GitHub Integration
+
+  - Docker Pipeline
+
+- Configured Node.js under Manage Jenkins > Tools > NodeJS
+
+- Added GitHub credentials using a Personal Access Token.
+
+### GitHub
+- Repository: [KinleyTobgayLhendrup_02230288_DSO101](https://github.com/Tobgaybolo/KinleyTobgayLhendrup_02230288_DSO101)
+
+- Added Jenkinsfile in the root directory.
+
+### Testing
+- Installed Jest and Jest JUnit Reporter:
+```npm install --save-dev jest jest-junit```
+- Added the following scripts to package.json:```
+"scripts": {
+"test": "jest --ci --reporters=default --reporters=jest-junit"
+}```
+## Screenshots
+Created a GitHub Personal Access Token (PAT) with repo and admin:repo_hook permissions  
+![alt text](<image ass2/Screenshot 2026-05-06 at 12.17.17 PM.png>)![alt text](<image ass2/Screenshot 2026-05-06 at 12.17.36 PM.png>) 
+
+Added GitHub credentials in Jenkins (Manage Jenkins > Credentials > Node > Add) 
+![alt text](<image ass2/Screenshot 2026-05-11 at 12.50.02 AM.png>)
+
+Create a Jenkinsfile in your root directory
+![alt text](<image ass2/Screenshot 2026-05-13 at 9.09.31 AM.png>)
+
+Ran the following commands for both frontend and backend
+```
+npm install --save-dev jest-junit
+```
+Created a new Jenkins Pipeline item
+
+- Pipeline script from SCM (Git)
+- Provided the repository URL and credentials
+- Set the script path to "jenkinsfile"
+- Built and monitored the pipeline execution  
+![alt text](<image ass2/Screenshot 2026-05-06 at 3.00.45 PM.png>)
+![alt text](<image ass2/Screenshot 2026-05-06 at 3.03.02 PM.png>)
+![alt text](<image ass2/Screenshot 2026-05-11 at 12.49.31 AM.png>)
+
+Images were then created in DockerHub 
+![alt text](<image ass2/Screenshot 2026-05-19 at 2.33.16 PM.png>)
+
+## Challenges Faced
+
+1. Test Report Not Showing in Jenkins The test results weren’t showing under Jenkins initially. Fixed it by ensuring the jest-junit reporter was configured correctly and naming the result file as junit.xml.
+
+2. Docker Authentication Jenkins failed to push the Docker image due to missing credentials. Solved by adding Docker Hub credentials in Jenkins and referencing the correct ID in the Jenkinsfile. 
+![alt text](<image ass2/Screenshot 2026-05-24 at 6.54.53 PM.png>)
+
+3. Jenkins pipeline failed at the Install stage due to a missing package.json file (ENOENT error). The file was not found in the expected workspace directory. Verified the correct repository path and ensured package.json was committed and located properly.  
+![alt text](<image ass2/Screenshot 2026-05-24 at 6.59.13 PM.png>)
+
+Build #8 succeeded, confirming the issue was fixed. 
+![alt text](<image ass2/Screenshot 2026-05-24 at 7.00.39 PM.png>)
+
+## Conculsion
+- Set up CI/CD pipeline using Jenkins.
+- Automated code checkout, install, test, and deploy.
+- Faced multiple build failures initially.
+- Fixed issues by updating package.json and test scripts.
+- Final build succeeded with passing tests.
+
+# Assignment III: TODO App CI/CD Deployment with GitHub Actions
+
+## Objective
+This project is a CI/CD assignment that demonstrates building and deploying a full-stack TODO application using Docker, GitHub Actions, DockerHub, and Render.com.
+
+The application is split into:
+
+- backend/ – Node.js (Express) server
+- frontend/ – React application
+
+The pipeline builds Docker images for both services and pushes them to DockerHub. Deployments are then triggered on Render.com using deploy webhooks, all automated via GitHub Actions.
+
+## Steps Followed
+
+### 1. Project Structure Verification
+- Ensured both backend/ and frontend/ directories contained a valid package.json with necessary scripts
+- Verified the repository was set to public
+- Confirmed Dockerfiles were correctly placed and structured for both services
+
+### 2. Set Up GitHub Actions Workflow
+Created `.github/workflows/main.yml` to automate:
+
+- Docker login
+- Build and push for backend and frontend
+- Webhook deployment to Render
+![alt text](<image ass3/Screenshot 2026-05-11 at 9.49.09 PM.png>)
+### 3. Configured GitHub Secrets
+Added the following secrets under Settings → Secrets and Variables → Actions, not Codespaces:
+
+- DOCKERHUB_USERNAME: Dockerhub Username
+- DOCKERHUB_TOKEN: Personal Access Token from Dockerhub
+- RENDER_BACKEND_WEBHOOK_URL
+- RENDER_FRONTEND_WEBHOOK_URL
+![alt text](<image ass3/Screenshot 2026-05-11 at 10.18.46 PM.png>)
+![alt text](<image ass3/Screenshot 2026-05-11 at 9.53.27 PM.png>)
+
+### 4. Configured Render Deploy Hooks
+- Created two services on Render, backend and frontend
+- Enabled deploy webhooks
+- Used those URLs in GitHub secrets
+![alt text](<image ass3/Screenshot 2026-05-11 at 10.30.52 PM.png>)
+![alt text](<image ass3/Screenshot 2026-05-11 at 10.30.30 PM.png>)
+### 5. Triggered Deployment
+Final push to the main branch ran the full CI/CD pipeline successfully:
+
+- Images built and pushed
+- Render deployment triggered
+![alt text](<image ass3/Screenshot 2026-05-11 at 11.02.42 PM.png>)
+- Verified that it deployed via Deploy Hook
+![alt text](<image ass3/Screenshot 2026-05-11 at 11.05.22 PM.png>)
+## Challenges Faced
+### DockerHub login failure in GitHub Actions
+I encountered an error during the DockerHub login step in GitHub Actions:
+
+```text
+Error: Username and password required
+```
+
+The issue occurred because I accidentally added the secrets under Secrets and variables → Codespaces instead of Actions. After moving the secrets to Actions scope, the login worked as expected.
+
+## Conclusion
+This part of the assignment helped reinforce practical understanding of CI/CD workflows using Docker, GitHub Actions, and Render. It covered:
+
+- Dockerizing both frontend and backend
+- Setting up automated builds and deployment pipelines
+
+Everything now works as expected with every push to the main branch automatically building and deploying the app.
